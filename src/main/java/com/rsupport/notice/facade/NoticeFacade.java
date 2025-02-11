@@ -43,5 +43,13 @@ public class NoticeFacade {
         return noticeDto;
     }
 
+    public NoticeResponseDto updateNotice(Long noticeId, NoticeRequestDto noticeRequestDto, List<MultipartFile> fileList, List<Long> removeIdList, String userName){
+        Notice notice = noticeService.updateNotice(noticeId, noticeRequestDto, userName);
+        List<AttachmentResponseDto> attachmentList = attachmentService.uploadAttachment(fileList, removeIdList, notice);
+        NoticeResponseDto noticeResult = NoticeConvertor.toResponseDto(notice);
+        noticeResult.setAttachmentList(attachmentList);
+        return noticeResult;
+    }
+
 
 }
