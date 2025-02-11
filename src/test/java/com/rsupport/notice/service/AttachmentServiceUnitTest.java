@@ -152,4 +152,54 @@ class AttachmentServiceUnitTest {
 
         assertThat(result).isNotNull();
     }
+
+    @Test
+    @DisplayName("첨부파일 업데이트 실패 - 삭제 첨부파일과 업데이트 첨부파일 수 불일치")
+    void testUploadAttachmentFailCountMismatch() {
+        // given
+        Notice notice = mock(Notice.class);
+        fileList = List.of(mock(MultipartFile.class), mock(MultipartFile.class));
+        removeIdList = List.of(100L);
+
+        // When & Then
+        Exception result = assertThrows(FailException.class, () ->
+                attachmentService.uploadAttachment(fileList, removeIdList, notice)
+        );
+
+        assertThat(result.getMessage()).isEqualTo(ErrorCode.ATTACHMENT_COUNT_MISMATCH.getMessage());
+    }
+
+    @Test
+    @DisplayName("첨부파일 업데이트 실패 - 삭제하려는 첨부파일이 원본에 존재 X")
+    void testUploadAttachmentFailMismatch() {
+        // given
+        Notice notice = mock(Notice.class);
+        fileList = List.of(mock(MultipartFile.class), mock(MultipartFile.class));
+        removeIdList = List.of(100L, 101L);
+        uploadedAttachments = List.of(mock(Attachment.class), mock(Attachment.class));
+
+        // when
+        Exception result = assertThrows(FailException.class, () ->
+                attachmentService.uploadAttachment(fileList, removeIdList, notice)
+        );
+
+        // then
+        assertThat(result.getMessage()).isEqualTo(ErrorCode.ATTACHMENT_MISMATCH.getMessage());
+    }
+
+    @Test
+    @DisplayName("첨부파일 삭제 테스트 성공")
+    void testDeleteAttachmentSuccess() {
+        // given
+        Long noticeId = 1L;
+        List<Attachment> attachments = List.of(mock(Attachment.class), mock(Attachment.class));
+        when(attachmentRepository.findByNoticeId(noticeId)).thenReturn(attachments);
+
+        // when
+        attachmentService.deleteAttachment(noticeId);
+
+        // then
+        verify(fileUtil, times(1)).removeFile(attachments);
+        attachments.forEach(attachment -> verify(attachment, times(1)).softDelete());
+    }
 }

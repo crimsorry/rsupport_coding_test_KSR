@@ -152,4 +152,26 @@ class NoticeFacadeIntegrationTest {
         assertThat(resultAttachment.getExtension()).isEqualTo("text/plain");
     }
 
+    @Test
+    @DisplayName("공지사항 삭제 성공")
+    void testDeleteNotice() {
+        // given
+        String title = "test title";
+        String userName = "testUser";
+        Notice saveNotice = Notice.builder().title(title).content("test content").startDate(LocalDateTime.now()).endDate(LocalDateTime.now().plusDays(1)).writer(userName).build();
+        Notice notice = noticeRepository.store(saveNotice);
+        Attachment saveAttachment = Attachment.builder().originalName("oldFile.txt").saveName("newFile.txt").extension("txt").size("12B").filePath("C:/rsupport/newFIle.txt").notice(notice).build();
+        attachmentRepository.store(saveAttachment);
+
+        // when
+        noticeFacade.deleteNotice(notice.getNoticeId(), userName);
+        Notice deleteNotice = noticeRepository.findById(notice.getNoticeId()).get();
+        List<Attachment> deleteAttachment = attachmentRepository.findByNoticeId(notice.getNoticeId());
+
+        // then
+        assertTrue(deleteNotice.getIsDeleted());
+        assertThat(deleteAttachment.size()).isEqualTo(1);
+        assertTrue(deleteAttachment.get(0).getIsDeleted());
+    }
+
 }

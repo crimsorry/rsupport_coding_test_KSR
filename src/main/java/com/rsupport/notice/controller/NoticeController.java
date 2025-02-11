@@ -62,5 +62,16 @@ public class NoticeController {
         return ResponseEntity.ok().body(noticeResult);
     }
 
+    /*
+     * 공지사항 + 첨부파일 삭제
+     * */
+    @DeleteMapping(value = "/{noticeId}", produces = "application/json")
+    public ResponseEntity<?> deleteNotice(
+            @RequestHeader(NoticeConstants.HEADER_USER_NAME) String userName,
+            @PathVariable("noticeId") long noticeId
+    ) {
+        noticeFacade.deleteNotice(noticeId, userName);
+        return ResponseEntity.ok().body(null);
+    }
 
 }

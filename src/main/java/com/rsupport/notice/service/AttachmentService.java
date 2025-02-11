@@ -11,6 +11,7 @@ import com.rsupport.notice.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -71,6 +72,18 @@ public class AttachmentService {
         attachmentList.forEach(attachment -> attachment.setNotice(notice));
         List<Attachment> saveAttachmentList = attachmentRepository.storeAll(attachmentList);
         return AttachmentConvertor.toResponseDto(saveAttachmentList);
+    }
+
+    /*
+     * 첨부파일 삭제
+     * */
+    @Transactional
+    public void deleteAttachment(Long noticeId) {
+        List<Attachment> attachmentList = attachmentRepository.findByNoticeId(noticeId);
+        fileUtil.removeFile(attachmentList);
+        for(Attachment attachment : attachmentList) {
+            attachment.softDelete();
+        }
     }
 
 }

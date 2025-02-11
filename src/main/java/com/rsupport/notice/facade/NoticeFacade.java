@@ -51,5 +51,10 @@ public class NoticeFacade {
         return noticeResult;
     }
 
+    public void deleteNotice(Long noticeId, String userName){
+        noticeService.deleteNotice(noticeId, userName);
+        attachmentService.deleteAttachment(noticeId);
+    }
+
 
 }
