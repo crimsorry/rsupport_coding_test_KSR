@@ -62,3 +62,40 @@
   > - [docs] : 문서(주석) 수정
   > - [style] : 코드 스타일, 포맷팅에 대한 수정
   > - [delete] : 파일 삭제
+
+### ERD
+
+```mermaid
+erDiagram
+NOTICE{
+	long notice_id PK "공지사항 ID"
+    varchar title "제목"
+    varchar content "내용"
+	varchar writer "작성자"
+	varchar modify_writer "수정자"
+	varchar delete_writer "삭제자"
+    long view "조회수"
+    dateTime start_date "공지 시작일"
+    dateTime end_date "공지 종료일"
+	boolean is_deleted "삭제 여부"
+    dateTime creat_at "등록일"
+    dateTime update_at "수정일"
+    dateTime delete_at "삭제일"
+}
+
+ATTACHMENT{
+	long attachment_id PK "첨부파일 ID"
+	long notice_id FK "공지사항 ID"
+	varchar original_name "원본 파일명"
+	varchar save_name "저장 파일명"
+	long size "파일 크기"
+	varchar extension "확장자"
+	varchar file_path "파일 경로"
+	boolean is_deleted "삭제 여부"
+    dateTime creat_at "등록일"
+    dateTime update_at "수정일"
+    dateTime delete_at "삭제일"
+}
+
+NOTICE ||--o{ ATTACHMENT : has
+```
