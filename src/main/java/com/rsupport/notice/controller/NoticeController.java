@@ -1,6 +1,7 @@
 package com.rsupport.notice.controller;
 
 import com.rsupport.notice.dto.request.NoticeRequestDto;
+import com.rsupport.notice.dto.response.NoticeDetailResponseDto;
 import com.rsupport.notice.dto.response.NoticeResponseDto;
 import com.rsupport.notice.facade.NoticeFacade;
 import com.rsupport.notice.support.constructor.NoticeConstants;
@@ -31,6 +32,18 @@ public class NoticeController {
             @RequestPart(value = "file", required = false) List<MultipartFile> fileList
     ) {
         NoticeResponseDto noticeResult = noticeFacade.createNoticeWithAttachments(notice, fileList, userName);
+        return ResponseEntity.ok().body(noticeResult);
+    }
+
+    /*
+     * 공지사항 + 첨부파일Id 조회
+     * */
+    @GetMapping(value = "/{noticeId}", produces = "application/json")
+    public ResponseEntity<NoticeDetailResponseDto> getNotice(
+            @RequestHeader(NoticeConstants.HEADER_USER_NAME) String userName,
+            @PathVariable("noticeId") long noticeId
+    ) {
+        NoticeDetailResponseDto noticeResult = noticeFacade.getNotice(noticeId, userName);
         return ResponseEntity.ok().body(noticeResult);
     }
 

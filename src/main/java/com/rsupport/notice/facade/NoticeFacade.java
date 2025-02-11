@@ -1,10 +1,11 @@
 package com.rsupport.notice.facade;
 
-import com.rsupport.notice.support.component.Facade;
+import com.rsupport.notice.domain.entity.Attachment;
 import com.rsupport.notice.domain.entity.Notice;
 import com.rsupport.notice.dto.NoticeConvertor;
 import com.rsupport.notice.dto.request.NoticeRequestDto;
 import com.rsupport.notice.dto.response.AttachmentResponseDto;
+import com.rsupport.notice.dto.response.NoticeDetailResponseDto;
 import com.rsupport.notice.dto.response.NoticeResponseDto;
 import com.rsupport.notice.service.AttachmentService;
 import com.rsupport.notice.service.NoticeService;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Facade
 @Transactional
@@ -29,6 +31,16 @@ public class NoticeFacade {
         NoticeResponseDto noticeResult = NoticeConvertor.toResponseDto(notice);
         noticeResult.setAttachmentList(attachmentList);
         return noticeResult;
+    }
+
+    public NoticeDetailResponseDto getNotice(Long noticeId, String userName){
+        NoticeDetailResponseDto noticeDto = noticeService.getDetailNotice(noticeId, userName);
+        List<Attachment> attachmentList = attachmentService.getNoticeAttachment(noticeId);
+        List<Long> idList = attachmentList.stream()
+                .map(Attachment::getAttachmentId)
+                .collect(Collectors.toList());
+        noticeDto.setAttachmentIdList(idList);
+        return noticeDto;
     }
 
 

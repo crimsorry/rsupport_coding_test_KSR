@@ -68,4 +68,56 @@ class AttachmentServiceUnitTest {
         verify(fileUtil, times(1)).uploadFile(fileList);
         verify(attachmentRepository, times(1)).storeAll(mockAttachments);
     }
+
+    @Test
+    @DisplayName("존재하지 않는 첨부파일 정보")
+    void testGetAttachmentFail(){
+        // given
+        Long attachmentId = 1L;
+        Boolean isDeleted = Boolean.FALSE;
+
+        when(attachmentRepository.findByIdAndIsDeleted(attachmentId, isDeleted)).thenReturn(Optional.empty());
+
+        // when
+        Exception exception = assertThrows(FailException.class, () -> {
+            attachmentService.getAttachment(attachmentId);
+        });
+
+        // then
+        assertThat(exception.getMessage()).isEqualTo(ErrorCode.ATTACHMENT_DATE_ORDER_INVALID.getMessage());
+    }
+
+    @Test
+    @DisplayName("첨부파일 정보 조회 성공")
+    void testGetAttachmentSuccess(){
+        // given
+        Long attachmentId = 1L;
+        Boolean isDeleted = Boolean.FALSE;
+        Attachment attachment = Attachment.builder().build();
+
+        when(attachmentRepository.findByIdAndIsDeleted(attachmentId, isDeleted)).thenReturn(Optional.ofNullable(attachment));
+
+        // when
+        attachmentService.getAttachment(attachmentId);
+
+        // then
+        verify(attachmentRepository, times(1)).findByIdAndIsDeleted(attachmentId, isDeleted);
+    }
+
+    @Test
+    @DisplayName("첨부파일 전체 조회 성공")
+    void testGetNoticeAttachment(){
+        // given
+        Long noticeId = 1L;
+        Boolean isDeleted = Boolean.FALSE;
+        List<Attachment> attachmentList = List.of(Attachment.builder().build());
+
+        when(attachmentRepository.findByNoticeIdAndIsDeleted(noticeId, isDeleted)).thenReturn(attachmentList);
+
+        // when
+        attachmentService.getNoticeAttachment(noticeId);
+
+        // then
+        verify(attachmentRepository, times(1)).findByNoticeIdAndIsDeleted(noticeId, isDeleted);
+    }
 }
