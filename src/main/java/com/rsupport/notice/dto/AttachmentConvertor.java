@@ -1,7 +1,7 @@
 package com.rsupport.notice.dto;
 
-import com.rsupport.board.domain.entity.Attachment;
-import com.rsupport.board.dto.response.AttachmentResponseDto;
+import com.rsupport.notice.domain.entity.Attachment;
+import com.rsupport.notice.dto.response.AttachmentResponseDto;
 
 import java.util.List;
 

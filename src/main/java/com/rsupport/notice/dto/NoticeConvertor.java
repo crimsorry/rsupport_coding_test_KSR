@@ -1,9 +1,9 @@
 package com.rsupport.notice.dto;
 
-import com.rsupport.board.domain.entity.Notice;
-import com.rsupport.board.dto.request.NoticeRequestDto;
-import com.rsupport.board.dto.response.NoticeDetailResponseDto;
-import com.rsupport.board.dto.response.NoticeResponseDto;
+import com.rsupport.notice.domain.entity.Notice;
+import com.rsupport.notice.dto.request.NoticeRequestDto;
+import com.rsupport.notice.dto.response.NoticeDetailResponseDto;
+import com.rsupport.notice.dto.response.NoticeResponseDto;
 import org.springframework.stereotype.Component;
 
 @Component
