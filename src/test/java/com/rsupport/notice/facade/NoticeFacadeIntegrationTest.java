@@ -162,6 +162,16 @@ class NoticeFacadeIntegrationTest {
         Notice notice = noticeRepository.store(saveNotice);
         Attachment saveAttachment = Attachment.builder().originalName("oldFile.txt").saveName("newFile.txt").extension("txt").size("12B").filePath("C:/rsupport/newFIle.txt").notice(notice).build();
         attachmentRepository.store(saveAttachment);
+
+        // when
+        noticeFacade.deleteNotice(notice.getNoticeId(), userName);
+        Notice deleteNotice = noticeRepository.findById(notice.getNoticeId()).get();
+        List<Attachment> deleteAttachment = attachmentRepository.findByNoticeId(notice.getNoticeId());
+
+        // then
+        assertTrue(deleteNotice.getIsDeleted());
+        assertThat(deleteAttachment.size()).isEqualTo(1);
+        assertTrue(deleteAttachment.get(0).getIsDeleted());
     }
 
 }

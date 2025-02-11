@@ -194,5 +194,12 @@ class AttachmentServiceUnitTest {
         Long noticeId = 1L;
         List<Attachment> attachments = List.of(mock(Attachment.class), mock(Attachment.class));
         when(attachmentRepository.findByNoticeId(noticeId)).thenReturn(attachments);
+
+        // when
+        attachmentService.deleteAttachment(noticeId);
+
+        // then
+        verify(fileUtil, times(1)).removeFile(attachments);
+        attachments.forEach(attachment -> verify(attachment, times(1)).softDelete());
     }
 }

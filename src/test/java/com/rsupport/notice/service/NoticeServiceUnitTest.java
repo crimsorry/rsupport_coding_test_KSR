@@ -237,5 +237,13 @@ class NoticeServiceUnitTest {
         Boolean isDeleted = Boolean.FALSE;
         String userName = "test";
         Notice notice = mock(Notice.class);
+
+        when(noticeRepository.findByIdAndIsDeleted(noticeId, isDeleted)).thenReturn(Optional.of(notice));
+
+        // when
+        noticeService.deleteNotice(noticeId, userName);
+
+        // then
+        verify(notice, times(1)).softDelete(userName);
     }
 }
