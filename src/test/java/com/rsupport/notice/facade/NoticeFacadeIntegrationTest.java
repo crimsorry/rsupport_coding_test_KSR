@@ -24,8 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
@@ -113,6 +112,25 @@ class NoticeFacadeIntegrationTest {
         assertThat(result.getStartDate()).isEqualTo(saveNotice.getStartDate());
         assertThat(result.getEndDate()).isEqualTo(saveNotice.getEndDate());
         assertThat(result.getAttachmentIdList().size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("공지사항 수정 성공")
+    void testUpdateNotice() {
+        // given
+        String title = "test title";
+        String newTitle = "new title";
+        String content= "test content";
+        String newContent = "new content";
+        String userName = "testUser";
+        Notice saveNotice = Notice.builder().title(title).content(content).startDate(LocalDateTime.now()).endDate(LocalDateTime.now().plusDays(1)).writer(userName).build();
+        Notice notice = noticeRepository.store(saveNotice);
+        Attachment saveAttachment = Attachment.builder().originalName("File.txt").saveName("FileReal.txt").extension("txt").size("12B").filePath("C:/rsupport/newFIle.txt").notice(notice).build();
+        Attachment attachment = attachmentRepository.store(saveAttachment);
+        NoticeRequestDto updateRequestDto = NoticeRequestDto.builder().title(newTitle).content(newContent).startDate(LocalDateTime.now()).endDate(LocalDateTime.now().plusDays(1)).build();
+        MockMultipartFile newFile = new MockMultipartFile("file", "newFile.txt", "text/plain", "Updated File".getBytes());
+        List<MultipartFile> newFileList = List.of(newFile);
+        List<Long> removeIdList = List.of(attachment.getAttachmentId());
     }
 
 }

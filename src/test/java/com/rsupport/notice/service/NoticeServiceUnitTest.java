@@ -196,4 +196,27 @@ class NoticeServiceUnitTest {
         verify(userCache, never()).put(eq(userName + "_" + noticeId), any());
         verify(viewCache, never()).put(eq(noticeId), any());
     }
+
+
+
+    @Test
+    @DisplayName("공지사항 업데이트 성공")
+    void testUpdateNoticeSuccess() {
+        // given
+        Long noticeId = 1L;
+        String userName = "test";
+        Boolean isDeleted = Boolean.FALSE;
+        String newTitle = "공지사항 제목";
+        String newContent = "공지사항 내용";
+        LocalDateTime newStartDate = LocalDateTime.now().minusDays(2);
+        LocalDateTime newEndDate = LocalDateTime.now().minusDays(1);
+        Notice notice = mock(Notice.class);
+        NoticeRequestDto newNotice = mock(NoticeRequestDto.class);
+
+        when(newNotice.getTitle()).thenReturn(newTitle);
+        when(newNotice.getContent()).thenReturn(newContent);
+        when(newNotice.getStartDate()).thenReturn(newStartDate);
+        when(newNotice.getEndDate()).thenReturn(newEndDate);
+        when(noticeRepository.findByIdAndIsDeleted(noticeId, isDeleted)).thenReturn(Optional.of(notice));
+    }
 }
