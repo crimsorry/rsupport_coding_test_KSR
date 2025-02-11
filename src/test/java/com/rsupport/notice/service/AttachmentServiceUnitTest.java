@@ -209,5 +209,17 @@ class AttachmentServiceUnitTest {
         // given
         List<Long> attachmentIds = List.of(100L, 101L);
         List<Attachment> attachments = List.of(mock(Attachment.class), mock(Attachment.class));
+
+        ResponseEntity<Resource> expectedResponse = mock(ResponseEntity.class);
+        when(attachmentRepository.findAllByAttachmentId(attachmentIds)).thenReturn(attachments);
+        when(fileUtil.downloadFile(attachments)).thenReturn(expectedResponse);
+
+        // when
+        ResponseEntity<Resource> response = attachmentService.downloadAttachment(attachmentIds);
+
+        // then
+        verify(attachmentRepository, times(1)).findAllByAttachmentId(attachmentIds);
+        verify(fileUtil, times(1)).downloadFile(attachments);
+        assertThat(response).isEqualTo(expectedResponse);
     }
 }

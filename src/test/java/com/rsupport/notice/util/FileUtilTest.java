@@ -67,7 +67,15 @@ private FileUtil fileUtil;
         // given
         MockMultipartFile file = new MockMultipartFile("file", "download-test.txt", "text/plain", "RSupport Download Test".getBytes());
         List<Attachment> attachments = fileUtil.uploadFile(List.of(file));
-     }
+
+        // when
+        ResponseEntity<Resource> response = fileUtil.downloadFile(attachments);
+
+        // then
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
 
     @Test
     @DisplayName("파일 다건 다운로드 성공 - zip 파일")
@@ -75,6 +83,15 @@ private FileUtil fileUtil;
         // given
         MockMultipartFile file1 = new MockMultipartFile("file", "zip-test1.txt", "text/plain", "File 1".getBytes());
         MockMultipartFile file2 = new MockMultipartFile("file", "zip-test2.txt", "text/plain", "File 2".getBytes());
+
+        List<Attachment> attachments = fileUtil.uploadFile(List.of(file1, file2));
+
+        // when
+        File zipFile = fileUtil.createZipFile(attachments);
+
+        // then
+        assertNotNull(zipFile);
+        assertTrue(zipFile.exists(), "ZIP 파일이 생성되어야 합니다.");
     }
 
 }
