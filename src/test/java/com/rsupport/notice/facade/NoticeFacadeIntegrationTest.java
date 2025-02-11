@@ -1,5 +1,6 @@
 package com.rsupport.notice.facade;
 
+import com.rsupport.notice.core.ErrorCode;
 import com.rsupport.notice.domain.entity.Attachment;
 import com.rsupport.notice.domain.entity.Notice;
 import com.rsupport.notice.domain.repository.AttachmentRepository;
@@ -8,6 +9,7 @@ import com.rsupport.notice.dto.request.NoticeRequestDto;
 import com.rsupport.notice.dto.response.NoticeResponseDto;
 import com.rsupport.notice.service.AttachmentService;
 import com.rsupport.notice.service.NoticeService;
+import com.rsupport.notice.support.error.FailException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +20,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 @SpringBootTest
 @Transactional
@@ -82,4 +88,18 @@ class NoticeFacadeIntegrationTest {
         assertThat(savedAttachment.get(1).getExtension()).isEqualTo(savedAttachment.get(1).getExtension());
         assertThat(savedAttachment.get(1).getFilePath()).isEqualTo(savedAttachment.get(1).getFilePath());
     }
+
+    @Test
+    @DisplayName("공지사항 조회 성공")
+    void testGetNotice() {
+        // given
+        String userName = "testUser";
+        String title = "test title";
+        Notice saveNotice = Notice.builder().title(title).content("test content").startDate(LocalDateTime.now()).endDate(LocalDateTime.now().plusDays(1)).writer(userName).build();
+        Notice notice = noticeRepository.store(saveNotice);
+        Attachment saveAttachment = Attachment.builder().originalName("oldFile.txt").saveName("newFile.txt").extension("txt").size("12B").filePath("C:/rsupport/newFIle.txt").notice(notice).build();
+        attachmentRepository.store(saveAttachment);
+
+    }
+
 }
