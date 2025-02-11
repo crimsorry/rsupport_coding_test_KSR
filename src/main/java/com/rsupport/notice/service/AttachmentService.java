@@ -10,6 +10,8 @@ import com.rsupport.notice.support.error.FailException;
 import com.rsupport.notice.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -84,6 +86,14 @@ public class AttachmentService {
         for(Attachment attachment : attachmentList) {
             attachment.softDelete();
         }
+    }
+
+    /*
+     * 첨부파일 다운로드
+     * */
+    public ResponseEntity<Resource> downloadAttachment(List<Long> attachmentIdList){
+        List<Attachment> attachmentList = attachmentRepository.findAllByAttachmentId(attachmentIdList);
+        return fileUtil.downloadFile(attachmentList);
     }
 
 }
