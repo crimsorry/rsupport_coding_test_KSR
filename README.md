@@ -99,3 +99,38 @@ ATTACHMENT{
 
 NOTICE ||--o{ ATTACHMENT : has
 ```
+
+
+## 핵심 문제해결 전략
+### 조회수 증가 로직
+1. **유저별 조회**
+* **Caffeine 캐시**를 활용하여 **5분 동안 동일 사용자의 중복 조회를 방지**
+2. **조회수 동기화**
+* **1분마다 스케줄러를 실행하여 캐시에 저장된 조회수를 DB에 반영**실시간 업데이트 성능을 최적화합니다.
+> **상위 공지사항 캐싱?**
+>
+> * 사용자가 공지사항을 조회할 때마다 조회수가 증가하는 구조이므로 **DB 정합성 문제** 발생
+>
+> * 따라서 **조회수 증가 로직만 캐싱하는 방식으로 설계**하여 문제 해결
+
+
+## 실행방법
+
+1. application 실행
+```cmd
+gradlew bootRun # (Windows)
+./gradlew bootRun  # (Mac/Linux)
+```
+
+2. api 테스트
+```cmd
+1. application 실행
+2. ./docs/generated-requests.http 파일 열기
+3. 각 api 요청 실행 (intellij 환경)
+```
+
+3. 테스트 실행
+```cmd
+gradlew test  # (Windows)
+./gradlew test  # (Mac/Linux)
+```
