@@ -54,5 +54,18 @@ class AttachmentServiceUnitTest {
         List<AttachmentResponseDto> expectedResponse = List.of(AttachmentResponseDto.builder().build());
         Notice notice = Notice.builder().build();
 
-        }
+        when(fileUtil.uploadFile(fileList)).thenReturn(mockAttachments);
+        when(attachmentRepository.storeAll(mockAttachments)).thenReturn(mockAttachments);
+        mockStatic(AttachmentConvertor.class);
+        when(AttachmentConvertor.toResponseDto(mockAttachments)).thenReturn(expectedResponse);
+
+        // when
+        List<AttachmentResponseDto> result = attachmentService.addAttachment(fileList, notice);
+
+        // then
+        assertNotNull(result);
+        assertThat(result.size()).isEqualTo(expectedResponse.size());
+        verify(fileUtil, times(1)).uploadFile(fileList);
+        verify(attachmentRepository, times(1)).storeAll(mockAttachments);
+    }
 }

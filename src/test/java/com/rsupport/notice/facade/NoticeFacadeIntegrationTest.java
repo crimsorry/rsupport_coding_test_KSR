@@ -57,7 +57,29 @@ class NoticeFacadeIntegrationTest {
         List<MultipartFile> fileList = List.of(file1, file2);
 
         // when
+        NoticeResponseDto result = noticeFacade.createNoticeWithAttachments(noticeRequestDto, fileList, userName);
+
+        Notice savedNotices = noticeService.getNotice(result.getNoticeId());
+        List<Attachment> savedAttachment = attachmentService.getNoticeAttachment(result.getNoticeId());
 
         // then
+        assertNotNull(result);
+        assertThat(savedNotices.getTitle()).isEqualTo(noticeRequestDto.getTitle());
+        assertThat(savedNotices.getContent()).isEqualTo(noticeRequestDto.getContent());
+        assertThat(savedNotices.getWriter()).isEqualTo(userName);
+        assertThat(savedNotices.getView()).isEqualTo(0L);
+        assertThat(savedNotices.getStartDate()).isEqualTo(noticeRequestDto.getStartDate());
+        assertThat(savedNotices.getEndDate()).isEqualTo(noticeRequestDto.getEndDate());
+        assertThat(fileList.size()).isEqualTo(savedAttachment.size());
+        assertThat(savedAttachment.get(0).getOriginalName()).isEqualTo(savedAttachment.get(0).getOriginalName());
+        assertThat(savedAttachment.get(0).getSaveName()).isEqualTo(savedAttachment.get(0).getSaveName());
+        assertThat(savedAttachment.get(0).getSize()).isEqualTo(savedAttachment.get(0).getSize());
+        assertThat(savedAttachment.get(0).getExtension()).isEqualTo(savedAttachment.get(0).getExtension());
+        assertThat(savedAttachment.get(0).getFilePath()).isEqualTo(savedAttachment.get(0).getFilePath());
+        assertThat(savedAttachment.get(1).getOriginalName()).isEqualTo(savedAttachment.get(1).getOriginalName());
+        assertThat(savedAttachment.get(1).getSaveName()).isEqualTo(savedAttachment.get(1).getSaveName());
+        assertThat(savedAttachment.get(1).getSize()).isEqualTo(savedAttachment.get(1).getSize());
+        assertThat(savedAttachment.get(1).getExtension()).isEqualTo(savedAttachment.get(1).getExtension());
+        assertThat(savedAttachment.get(1).getFilePath()).isEqualTo(savedAttachment.get(1).getFilePath());
     }
 }

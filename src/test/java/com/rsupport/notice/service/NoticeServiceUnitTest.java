@@ -45,6 +45,17 @@ class NoticeServiceUnitTest {
         NoticeRequestDto noticeRequestDto = new NoticeRequestDto();
         Notice notice = mock(Notice.class);
 
+        try (MockedStatic<NoticeConvertor> mockConvertor = mockStatic(NoticeConvertor.class)) {
+            // when
+            mockConvertor.when(() -> NoticeConvertor.toEntity(noticeRequestDto, userName)).thenReturn(notice);
+            when(noticeRepository.store(notice)).thenReturn(notice);
 
+            // then
+            Notice result = noticeService.addNotice(noticeRequestDto, userName);
+
+            assertNotNull(result);
+            mockConvertor.verify(() -> NoticeConvertor.toEntity(noticeRequestDto, userName), times(1));
+            verify(noticeRepository, times(1)).store(notice);
+        }
     }
 }
