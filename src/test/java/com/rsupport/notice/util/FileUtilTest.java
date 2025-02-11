@@ -5,6 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,6 +59,22 @@ private FileUtil fileUtil;
 
         // then
         assertFalse(fileToDelete.exists(), "파일이 삭제되어야 합니다.");
+    }
+
+    @Test
+    @DisplayName("파일 단건 다운로드 성공")
+    void testDownloadFileSuccess() {
+        // given
+        MockMultipartFile file = new MockMultipartFile("file", "download-test.txt", "text/plain", "RSupport Download Test".getBytes());
+        List<Attachment> attachments = fileUtil.uploadFile(List.of(file));
+     }
+
+    @Test
+    @DisplayName("파일 다건 다운로드 성공 - zip 파일")
+    void testCreateZipFileSuccess() {
+        // given
+        MockMultipartFile file1 = new MockMultipartFile("file", "zip-test1.txt", "text/plain", "File 1".getBytes());
+        MockMultipartFile file2 = new MockMultipartFile("file", "zip-test2.txt", "text/plain", "File 2".getBytes());
     }
 
 }

@@ -202,4 +202,12 @@ class AttachmentServiceUnitTest {
         verify(fileUtil, times(1)).removeFile(attachments);
         attachments.forEach(attachment -> verify(attachment, times(1)).softDelete());
     }
+
+    @Test
+    @DisplayName("첨부파일 다운로드 테스트 성공")
+    void testDownloadAttachmentSuccess() {
+        // given
+        List<Long> attachmentIds = List.of(100L, 101L);
+        List<Attachment> attachments = List.of(mock(Attachment.class), mock(Attachment.class));
+    }
 }
