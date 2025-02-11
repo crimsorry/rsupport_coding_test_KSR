@@ -6,6 +6,7 @@ import com.rsupport.notice.domain.entity.Notice;
 import com.rsupport.notice.domain.repository.AttachmentRepository;
 import com.rsupport.notice.domain.repository.NoticeRepository;
 import com.rsupport.notice.dto.request.NoticeRequestDto;
+import com.rsupport.notice.dto.response.NoticeDetailResponseDto;
 import com.rsupport.notice.dto.response.NoticeResponseDto;
 import com.rsupport.notice.service.AttachmentService;
 import com.rsupport.notice.service.NoticeService;
@@ -100,6 +101,18 @@ class NoticeFacadeIntegrationTest {
         Attachment saveAttachment = Attachment.builder().originalName("oldFile.txt").saveName("newFile.txt").extension("txt").size("12B").filePath("C:/rsupport/newFIle.txt").notice(notice).build();
         attachmentRepository.store(saveAttachment);
 
+        // when
+        NoticeDetailResponseDto result = noticeFacade.getNotice(notice.getNoticeId(), userName);
+
+        // then
+        assertNotNull(result);
+        assertThat(result.getTitle()).isEqualTo(saveNotice.getTitle());
+        assertThat(result.getContent()).isEqualTo(saveNotice.getContent());
+        assertThat(result.getWriter()).isEqualTo(userName);
+        assertThat(result.getView()).isEqualTo(1L);
+        assertThat(result.getStartDate()).isEqualTo(saveNotice.getStartDate());
+        assertThat(result.getEndDate()).isEqualTo(saveNotice.getEndDate());
+        assertThat(result.getAttachmentIdList().size()).isEqualTo(1);
     }
 
 }

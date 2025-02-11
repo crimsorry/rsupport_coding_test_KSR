@@ -143,6 +143,17 @@ class NoticeServiceUnitTest {
         when(cacheManager.getCache("notice_view_user_cache")).thenReturn(userCache);
         when(cacheManager.getCache("notice_view_cache")).thenReturn(viewCache);
         when(noticeRepository.findByIdAndIsDeleted(noticeId, isDeleted)).thenReturn(Optional.ofNullable(notice));
+
+        // when
+        NoticeDetailResponseDto result = noticeService.getDetailNotice(noticeId, userName);
+
+        // then
+        verify(noticeRepository, times(1)).findByIdAndIsDeleted(noticeId, isDeleted);
+        assertThat(result.getTitle()).isEqualTo(notice.getTitle());
+        assertThat(result.getContent()).isEqualTo(notice.getContent());
+        assertThat(result.getWriter()).isEqualTo(notice.getWriter());
+        assertThat(result.getStartDate()).isEqualTo(notice.getStartDate());
+        assertThat(result.getEndDate()).isEqualTo(notice.getEndDate());
     }
 
     @Test
@@ -157,6 +168,14 @@ class NoticeServiceUnitTest {
         when(viewCache.get(noticeId, Long.class)).thenReturn(count);
         when(cacheManager.getCache("notice_view_user_cache")).thenReturn(userCache);
         when(cacheManager.getCache("notice_view_cache")).thenReturn(viewCache);
+
+        // when
+        Long updatedView = noticeService.increaseView(noticeId, userName);
+
+        // then
+        assertThat(updatedView).isEqualTo(count + 1);
+        verify(userCache, times(1)).put(userName + "_" + noticeId, true);
+        verify(viewCache, times(1)).put(noticeId, count + 1);
     }
 
     @Test
@@ -169,5 +188,12 @@ class NoticeServiceUnitTest {
         when(userCache.get(userName + "_" + noticeId)).thenReturn(() -> true);
         when(cacheManager.getCache("notice_view_user_cache")).thenReturn(userCache);
         when(cacheManager.getCache("notice_view_cache")).thenReturn(viewCache);
-}
+
+        // when & then
+        Long updatedView = noticeService.increaseView(noticeId, userName);
+
+        assertThat(updatedView).isEqualTo(count);
+        verify(userCache, never()).put(eq(userName + "_" + noticeId), any());
+        verify(viewCache, never()).put(eq(noticeId), any());
+    }
 }

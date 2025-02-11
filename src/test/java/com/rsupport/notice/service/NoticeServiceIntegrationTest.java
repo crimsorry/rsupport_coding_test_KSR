@@ -33,6 +33,12 @@ class NoticeServiceIntegrationTest {
         String userName = "testUser";
         Notice notice = Notice.builder().title("test title").content("test content").startDate(LocalDateTime.now()).endDate(LocalDateTime.now().plusDays(1)).writer(userName).build();
         Notice saveNotice = noticeRepository.store(notice);
+
+        // when
+        Long newCount = noticeService.increaseView(saveNotice.getNoticeId(), userName);
+
+        // then
+        assertThat(newCount).isEqualTo(1L);
     }
 
     @Test
@@ -43,5 +49,17 @@ class NoticeServiceIntegrationTest {
         String userName2 = "testUser2";
         Notice notice = Notice.builder().title("test title").content("test content").startDate(LocalDateTime.now()).endDate(LocalDateTime.now().plusDays(1)).writer(userName).build();
         noticeRepository.store(notice);
+
+        noticeService.increaseView(notice.getNoticeId(), userName);
+        noticeService.increaseView(notice.getNoticeId(), userName);
+        noticeService.increaseView(notice.getNoticeId(), userName2);
+        noticeService.increaseView(notice.getNoticeId(), userName2);
+
+        // when
+        noticeService.syncViewCountToDB();
+
+        // then
+        Notice updatedNotice = noticeRepository.findById(notice.getNoticeId()).orElseThrow();
+        assertThat(updatedNotice.getView()).isEqualTo(2L);
     }
 }
