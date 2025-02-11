@@ -5,11 +5,12 @@ import com.rsupport.notice.dto.response.AttachmentResponseDto;
 import com.rsupport.notice.service.AttachmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -28,6 +29,16 @@ public class AttachmentController {
     ) {
         AttachmentResponseDto result =  AttachmentConvertor.toResponseDto(attachmentService.getAttachment(attachmentId));
         return ResponseEntity.ok().body(result);
+    }
+
+    /*
+     * 첨부파일 단건, 다건 다운로드
+     * */
+    @GetMapping(value = "/download", produces = "application/octet-stream")
+    public ResponseEntity<Resource> downloadNotice(
+            @RequestParam("attachmentIdList") List<Long> attachmentIdList
+    ) throws IOException {
+        return attachmentService.downloadAttachment(attachmentIdList);
     }
 
 }
