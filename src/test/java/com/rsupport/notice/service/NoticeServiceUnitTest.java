@@ -218,5 +218,14 @@ class NoticeServiceUnitTest {
         when(newNotice.getStartDate()).thenReturn(newStartDate);
         when(newNotice.getEndDate()).thenReturn(newEndDate);
         when(noticeRepository.findByIdAndIsDeleted(noticeId, isDeleted)).thenReturn(Optional.of(notice));
+
+        // when
+        Notice result = noticeService.updateNotice(noticeId, newNotice, userName);
+
+        // then
+        verify(notice, times(1)).updateContent(newNotice.getTitle(), newNotice.getContent(),
+                newNotice.getStartDate(), newNotice.getEndDate(), userName);
+        verify(notice, times(1)).validateOpenDate();
+        assertThat(result).isEqualTo(notice);
     }
 }

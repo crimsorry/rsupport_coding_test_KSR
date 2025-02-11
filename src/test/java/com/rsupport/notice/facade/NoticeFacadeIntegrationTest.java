@@ -131,6 +131,25 @@ class NoticeFacadeIntegrationTest {
         MockMultipartFile newFile = new MockMultipartFile("file", "newFile.txt", "text/plain", "Updated File".getBytes());
         List<MultipartFile> newFileList = List.of(newFile);
         List<Long> removeIdList = List.of(attachment.getAttachmentId());
+
+        // when
+        NoticeResponseDto result = noticeFacade.updateNotice(notice.getNoticeId(), updateRequestDto, newFileList, removeIdList, userName);
+        Notice resultNotices = noticeService.getNotice(result.getNoticeId());
+        Attachment deleteAttachment = attachmentRepository.findById(attachment.getAttachmentId()).get();
+        Attachment resultAttachment = attachmentRepository.findById(result.getAttachmentList().get(0).getAttachmentId()).get();
+
+        // then
+        assertNotNull(result);
+        assertTrue(deleteAttachment.getIsDeleted());
+        assertThat(resultNotices.getTitle()).isEqualTo(saveNotice.getTitle());
+        assertThat(resultNotices.getContent()).isEqualTo(saveNotice.getContent());
+        assertThat(resultNotices.getWriter()).isEqualTo(userName);
+        assertThat(resultNotices.getView()).isEqualTo(0);
+        assertThat(resultNotices.getStartDate()).isEqualTo(saveNotice.getStartDate());
+        assertThat(resultNotices.getEndDate()).isEqualTo(saveNotice.getEndDate());
+        assertThat(resultAttachment.getOriginalName()).isEqualTo("newFile.txt");
+        assertThat(resultAttachment.getSaveName()).contains("newFile");
+        assertThat(resultAttachment.getExtension()).isEqualTo("text/plain");
     }
 
 }

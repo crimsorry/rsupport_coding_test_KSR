@@ -139,5 +139,17 @@ class AttachmentServiceUnitTest {
         when(attachmentRepository.findByNoticeIdAndIsDeleted(notice.getNoticeId(), Boolean.FALSE)).thenReturn(existAttachmentList);
         when(fileUtil.uploadFile(fileList)).thenReturn(uploadedAttachments);
         when(attachmentRepository.storeAll(uploadedAttachments)).thenReturn(uploadedAttachments);
+
+        // when
+        List<AttachmentResponseDto> result = attachmentService.uploadAttachment(fileList, removeIdList, notice);
+
+        // then
+        verify(fileUtil, times(1)).removeFile(existAttachmentList);
+        existAttachmentList.forEach(attachment -> verify(attachment, times(1)).softDelete());
+
+        verify(fileUtil, times(1)).uploadFile(fileList);
+        verify(attachmentRepository, times(1)).storeAll(uploadedAttachments);
+
+        assertThat(result).isNotNull();
     }
 }
