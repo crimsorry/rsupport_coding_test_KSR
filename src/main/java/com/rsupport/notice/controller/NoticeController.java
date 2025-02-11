@@ -47,5 +47,20 @@ public class NoticeController {
         return ResponseEntity.ok().body(noticeResult);
     }
 
+    /*
+     * 공지사항 + 첨부파일 업데이트
+     * */
+    @PutMapping(value = "/{noticeId}", consumes = { "multipart/form-data" })
+    public ResponseEntity<NoticeResponseDto> updateNotice(
+            @RequestHeader(NoticeConstants.HEADER_USER_NAME) String userName,
+            @PathVariable("noticeId") long noticeId,
+            @RequestPart("notice") @Valid NoticeRequestDto notice,
+            @RequestPart("removeIdList") @Valid List<Long> removeIdList,
+            @RequestPart(value = "file", required = false) List<MultipartFile> fileList
+    ) {
+        NoticeResponseDto noticeResult = noticeFacade.updateNotice(noticeId, notice, fileList,  removeIdList, userName);
+        return ResponseEntity.ok().body(noticeResult);
+    }
+
 
 }

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -62,6 +63,20 @@ public class FileUtil {
         } catch (IOException e) {
             log.error("파일 저장 실패: {}", file.getOriginalFilename(), e);
             throw new RuntimeException("파일 저장 중 오류 발생: " + file.getOriginalFilename(), e);
+        }
+    }
+
+    /*
+     * 파일 삭제
+     * */
+    public void removeFile(List<Attachment> attachmentList) {
+        for (Attachment attachment : attachmentList) {
+            File file = new File(attachment.getFilePath());
+            if (file.exists()) {
+                file.delete();
+            }else{
+                log.error("파일 삭제 실패: {}", attachment.getFilePath());
+            }
         }
     }
 

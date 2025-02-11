@@ -12,8 +12,8 @@ import java.io.File;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest
 class FileUtilTest {@Autowired
@@ -38,6 +38,24 @@ private FileUtil fileUtil;
             File uploadedFile = new File(attachment.getFilePath());
             assertTrue(uploadedFile.exists(), "업로드된 파일이 존재해야 합니다.");
         }
+    }
+
+    @Test
+    @DisplayName("파일 삭제 성공")
+    void testRemoveFileSuccess() {
+        // given
+        MockMultipartFile file = new MockMultipartFile("file", "delete-test.txt", "text/plain", "RSupport Delete Test".getBytes());
+        List<Attachment> attachments = fileUtil.uploadFile(List.of(file));
+
+        assertFalse(attachments.isEmpty());
+        File fileToDelete = new File(attachments.get(0).getFilePath());
+        assertTrue(fileToDelete.exists(), "삭제할 파일이 존재해야 합니다.");
+
+        // when
+        fileUtil.removeFile(attachments);
+
+        // then
+        assertFalse(fileToDelete.exists(), "파일이 삭제되어야 합니다.");
     }
 
 }

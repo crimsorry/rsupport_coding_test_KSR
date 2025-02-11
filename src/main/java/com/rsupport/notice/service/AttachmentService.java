@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -45,6 +46,31 @@ public class AttachmentService {
      * */
     public List<Attachment> getNoticeAttachment(Long noticeId) {
         return attachmentRepository.findByNoticeIdAndIsDeleted(noticeId, Boolean.FALSE);
+    }
+
+    /*
+     * 첨부파일 업데이트
+     * */
+    public List<AttachmentResponseDto> uploadAttachment(List<MultipartFile> fileList, List<Long> removeIdList, Notice notice) {
+        if(fileList.size() != removeIdList.size()) throw new FailException(ErrorCode.ATTACHMENT_COUNT_MISMATCH);
+
+        List<Attachment> existAttachmentList = getNoticeAttachment(notice.getNoticeId());
+
+        List<Attachment> filesToDelete = existAttachmentList.stream()
+                .filter(attachment -> removeIdList.contains(attachment.getAttachmentId()))
+                .collect(Collectors.toList());
+
+        if(filesToDelete.size() != removeIdList.size()) throw new FailException(ErrorCode.ATTACHMENT_MISMATCH);
+
+        // 파일 삭제
+        fileUtil.removeFile(filesToDelete);
+        filesToDelete.forEach(attachment -> attachment.softDelete());
+
+        // 파일 업로드
+        List<Attachment> attachmentList = fileUtil.uploadFile(fileList);
+        attachmentList.forEach(attachment -> attachment.setNotice(notice));
+        List<Attachment> saveAttachmentList = attachmentRepository.storeAll(attachmentList);
+        return AttachmentConvertor.toResponseDto(saveAttachmentList);
     }
 
 }

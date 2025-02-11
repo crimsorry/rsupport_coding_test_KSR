@@ -120,4 +120,36 @@ class AttachmentServiceUnitTest {
         // then
         verify(attachmentRepository, times(1)).findByNoticeIdAndIsDeleted(noticeId, isDeleted);
     }
+
+
+
+    @Test
+    @DisplayName("첨부파일 업데이트 성공")
+    void testUploadAttachmentSuccess() {
+        // given
+        Notice notice = mock(Notice.class);
+        when(notice.getNoticeId()).thenReturn(1L);
+        fileList = List.of(mock(MultipartFile.class), mock(MultipartFile.class));
+        removeIdList = List.of(100L, 101L);
+        List<Attachment> existAttachmentList = List.of(mock(Attachment.class), mock(Attachment.class));
+        uploadedAttachments = List.of(mock(Attachment.class), mock(Attachment.class));
+
+        when(existAttachmentList.get(0).getAttachmentId()).thenReturn(100L);
+        when(existAttachmentList.get(1).getAttachmentId()).thenReturn(101L);
+        when(attachmentRepository.findByNoticeIdAndIsDeleted(notice.getNoticeId(), Boolean.FALSE)).thenReturn(existAttachmentList);
+        when(fileUtil.uploadFile(fileList)).thenReturn(uploadedAttachments);
+        when(attachmentRepository.storeAll(uploadedAttachments)).thenReturn(uploadedAttachments);
+
+        // when
+        List<AttachmentResponseDto> result = attachmentService.uploadAttachment(fileList, removeIdList, notice);
+
+        // then
+        verify(fileUtil, times(1)).removeFile(existAttachmentList);
+        existAttachmentList.forEach(attachment -> verify(attachment, times(1)).softDelete());
+
+        verify(fileUtil, times(1)).uploadFile(fileList);
+        verify(attachmentRepository, times(1)).storeAll(uploadedAttachments);
+
+        assertThat(result).isNotNull();
+    }
 }

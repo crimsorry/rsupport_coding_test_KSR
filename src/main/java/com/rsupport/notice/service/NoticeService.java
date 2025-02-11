@@ -101,4 +101,15 @@ public class NoticeService {
         totalView = 0L;
     }
 
+    /*
+     * 공지사항 업데이트
+     * */
+    @Transactional
+    public Notice updateNotice(Long noticeId, NoticeRequestDto noticeRequestDto, String userName){
+        Notice notice = getNotice(noticeId);
+        notice.updateContent(noticeRequestDto.getTitle(), noticeRequestDto.getContent(), noticeRequestDto.getStartDate(), noticeRequestDto.getEndDate(), userName);
+        notice.validateOpenDate();
+        return notice;
+    }
+
 }
